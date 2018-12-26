@@ -10,9 +10,9 @@ chooseCRANmirror(graphics=FALSE, ind=1)
 ```
 
 # How to make plots in R using base plot and ggplot2
-R allows you to plot your data and customize the way the figure looks using base functions that are preloaded in R. These base functions make visualize data very simple and are relatively straightforward once you've learned the basics of coding in R.
+R allows you to plot your data and customize the way the figure looks using base functions that are preloaded in R. These base functions make visualizing data very simple and are relatively straightforward once you've learned the basics of coding in R.
 
-The ggplot2 package (hereafter referred to as ggplot), is a free package that also plots data, but allows for much greater customization than the base functions. ggplot can even perform statistical analyses and directly plot the results. However, the code to create a plot in ggplot can be somewhat hard to interpret. 
+The ggplot2 package (hereafter referred to as ggplot), is a free package that also plots data, but allows for much greater customization than the base functions. ggplot can even perform statistical analyses and directly plot the results. However, the code to create a plot in ggplot can be somewhat hard to interpret, especially for beginners. 
 
 The following examples can be adapted to create the majority of plots you will need to make in this semester's course.
 
@@ -25,7 +25,7 @@ install.packages("ggplot2") # Only need to install the package one time
 library(ggplot2) # Need to load the ggplot2 package every time you start R
 data("iris") # Iris is a famous dataset that is built into R and is commonly used as an example dataset
 
-# We will also use data from UF professors Dr. Earnest and Dr. White who have made their data freely available in the package rportal
+# We will also use data from UF professors Dr. Earnest and Dr. White who have made their data freely available in the package portalr
 install.packages("portalr") # Only need to install the package once
 library(portalr)
 download_observations() # This downloads the portal data and stores it on your computer
@@ -67,17 +67,17 @@ plot(x=iris$Sepal.Length, y=iris$Petal.Length, # Define the data for the x and y
      pch = 19) # Change the shape of the points
 
 # Creating a 95% confidence requires calculating the linear model between the x and y variables and making predictions from the model.
-iris_mod=lm(Petal.Length~Sepal.Length,data = iris) # Calculate the linear model between the x and y variables
+iris_mod=lm(Petal.Length~Sepal.Length,data = iris) # Calculate the linear relationship (a linear model) between the x and y variables
 
-predicted_x=seq(min(iris$Sepal.Length),max(iris$Sepal.Length),by=0.5) # Create new variables for the x axis that range from the minimum value of x to the maximum value of x in increments of 0.5
+predicted_x=seq(min(iris$Sepal.Length),max(iris$Sepal.Length),by=0.5) # Create new values for the x axis that range from the minimum value of x to the maximum value of x in increments of 0.5
 
 pred_iris_mod=predict(iris_mod, # Make predictions using the linear model for the new values of x
                       newdata = data.frame(Sepal.Length=predicted_x), # These are the x-values that the predictions will be made from
                       interval = "confidence", level = 0.95) # Calculate the 95% confidence interval
 
 
-abline(iris_mod, # Plot the line from the linea model 
-       col="red", # Change the color of the line
+abline(iris_mod, # Plot the line from the linear model 
+       col="red", # Make the color of the line to red
        lty = "dashed", # Change the type of line to dashed
        lwd = 3) # Change the width of the line 
 
@@ -88,9 +88,9 @@ lines(predicted_x,pred_iris_mod[,3]) # Plot the line for the upper boundary of t
 # Create a legend
 legend(x = 7.2, y = 2.2,# Define the x and y coordinates where the legend will be placed. These numbers correspond with the scale of the axis. 
        legend = levels(iris$Species), # Define the labels for the legend
-       col=c("blue","orange","green"), # Give the legend colors for the points (this can be a list of color names in parentheses if you define the colors manually)
+       col=c("blue","orange","green"), # Give the legend colors for the points
        title = "Species", # Give the legend a title
-       pch=19) # Give the shape of the points in the legend
+       pch=19) # Give the shape of the points in the legend (19 is a filled circle)
 ```
 ```{r Saving plots2, eval=FALSE, collapse=TRUE}
 dev.off() # Tell R that the plot is complete and the pdf should be saved      
@@ -102,14 +102,14 @@ dev.off() # Tell R that the plot is complete and the pdf should be saved
 ```{r ggplot Scatterplot, fig.dim=c(8,8)}
 ggplot(data = iris, # Define where the data comes from
        aes(x=Sepal.Length, y=Petal.Length, # Define the aesthetic, which is the data for the x and y axes
-           color=Species))+ # Also in the aestetic, define the variable to be colored
+           color=Species))+ # Also in the aesthetic, define the variable to be colored
   geom_point()+ # Display the data as points
   geom_smooth(method = lm, fullrange = T, se = T, level = 0.95, color="red", linetype="dashed")+ # Calculate and draw the line showing the linear relationship between all of the points. By setting se = T, ggplot draws the confidence interval around the line, and setting level=0.95 makes it the 95% CI
   theme_bw()+ # Get rid of the gray background
   xlab("Sepal Length")+ # Label the x-axis
   ylab("Petal Length")+ # Label the y-axis
   ggtitle("Scatterplot of Iris data using ggplot")+ # Give the plot a title
-  # labs (x="Sepal Length", y="Petal Length", main="Scatterplot of Iris data using ggplot") # This will also work instead of defining each label separately
+  # labs(x="Sepal Length", y="Petal Length", main="Scatterplot of Iris data using ggplot") # Could instead use this code to label axes and title
   scale_color_manual(values = c("blue","green","orange"))+ # Set the colors of the different groups
   coord_cartesian(xlim = c(4,8), ylim=c(1,7))+ # Set the x and y axis limits
   theme(axis.title = element_text(size = 18), # Change the size of the text for the axis label (sepal length and petal width)
@@ -143,8 +143,8 @@ Bar plots look very similar to histograms, but show the number of observations i
 
 ```{r base R histogram}
 hist(iris$Petal.Length, # Create the histogram and define the variable to be binned
-     breaks = seq(1,7,by=0.5), # Define the bins which go from 0 to 5.5 in intervals of 0.25
-     ylim = c(0,40), # Define the range of the y-axis 
+     breaks = seq(1,7, by = 0.5), # Define the bins which go from 1 to 7 in intervals of 0.5
+     ylim = c(0, 40), # Define the range of the y-axis 
      xlim = c(0, 7), # Define the range of the x-axis
      xlab = "Petal Length (cm)", # Label the x-axis
      ylab = "Frequency of Observations", # Label the y-axis
@@ -163,7 +163,7 @@ ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because 
   theme_bw()+ # Get rid of the gray background of the plot
   xlab("Petal Length (cm)")+ # Label the x-axis
   ylab("Frequency of Observations")+ # Label the y-axis
-  coord_cartesian(xlim = c(0,7), ylim = c(0,40))+ # Set the range of the plot
+  coord_cartesian(xlim = c(0,7), ylim = c(0,40))+ # Set the range of both axes
   ggtitle("Histogram of Iris data using ggplot")+ # Give the plot a title
   theme(title = element_text(size=16), # Change the text size of the title
         axis.title = element_text(size = 16), # Change the size of the text for the axis label (sepal length and petal width)
@@ -189,7 +189,7 @@ rodent_abundance_sub=subset(rodent,rodent$abundance>0)
 ```{r base R bar plot}
 plot(rodent_abundance_sub$species, # Define the data for the plot
      xlab = "Species", # Label the x-axis
-     ylab = "Frequency Observed >0", # Label the y-axis
+     ylab = "Frequency of Observations >0", # Label the y-axis
      main = "Bar plot of Portal data using BaseR", # Give the plot a title
      col = c("white"), # Set the inside color for each bar
      ylim = c(0,500)) # Set the range for the y-axis
@@ -199,10 +199,10 @@ plot(rodent_abundance_sub$species, # Define the data for the plot
 
 ```{r ggplot barplot}
 ggplot(data=rodent_abundance_sub,aes(x=species))+ # Define the data for the plot
-  stat_count(col="black", fill="white")+ # Use stat_count to create the bar plot, and make this outside of each bar black and the inside of each bar white
+  stat_count(col="black", fill="white")+ # Use stat_count to create the bar plot. Make the outside (col) of each bar black and the inside (fill) of each bar white
   theme_bw()+ # Get rid of the gray background in the plot
   xlab("Species")+ # Label the x-axis 
-  ylab("Frequency Observed > 0")+ # Label the y-axis
+  ylab("Frequency of Observations >0")+ # Label the y-axis
   ggtitle("Bar plot of Portal data using ggplot")+ # Give the plot a title
   theme(panel.grid.major = element_blank(), # Get rid of the major grid lines
         panel.grid.minor = element_blank(), # Get rid of the minor grid lines
@@ -214,7 +214,8 @@ ggplot(data=rodent_abundance_sub,aes(x=species))+ # Define the data for the plot
 
 
 ## Boxplots and Point Estimates
-Boxplots and point estimates can be used to show measures of central tendency for data that are measured continuously and can be broken into distinct groups (continuous y-variable, categorical x-axis)
+Boxplots and point estimates can be used to show measures of central tendency for data that are measured continuously and can be broken into distinct groups.
+
 A boxplot describes the data in quartiles; the line within the box is the median, the bottom of the box is the 25th percentile, and the top of the box is the 75th percentile of the data. The whiskers show the spread of the data that fall within a range of 1.5x outside the box. Outliers can also be shown as individual points beyond either end of the whiskers. 
 
 ### Boxplots using base R
@@ -225,7 +226,7 @@ plot(x=rodent_abundance_sub$species, y=rodent_abundance_sub$abundance, # Define 
      ylim = c(0,125), # Set the y-axis range
      xlab = "Species", # Label the x-axis
      ylab = "Abundance", # Label the y-axis
-     main = "Boxplot of Portal data using BaseR") # Give the plot a title
+     main = "Boxplot of Portal data using base R") # Give the plot a title
 ```
 
 
@@ -236,7 +237,7 @@ ggplot(data=rodent_abundance_sub, aes(x=species, y=abundance))+ # Define where t
   geom_boxplot(outlier.shape = NA)+ # Make the plot a box plot, and remove the outliers by setting their shape to NA
   theme_bw()+ # Get rid of the gray background
   xlab("Species")+ # Label the x-axis
-  ylab("Abundace")+ # Label the y-axis
+  ylab("Abundance")+ # Label the y-axis
   ggtitle("Boxplot of Portal data using ggplot")+ # Give the plot a title
   coord_cartesian(ylim=c(0,125))+ # Define y-axis range
   theme(axis.title = element_text(size = 16), # Change the size of the text for the axis label (sepal length and petal width)
@@ -281,7 +282,7 @@ plot(x = rodent_means$period,
 
 # R hack: use arrows to plot the error bars (95% CIs that we calculated above) 
 arrows(rodent_means$period, rodent_means$lower_CI, # The start point of the arrow (x0, y0)
-       rodent_means$period, rodent_means$upper_CI, # The end point of the arrow (x1, y1). In this case, that starting and ending x are the same because we only want a vertical line (change in y) on each point.
+       rodent_means$period, rodent_means$upper_CI, # The end point of the arrow (x1, y1). In this case the starting and ending x are the same because we only want a vertical line (change in y) on each point.
        length=0.05, angle=90, code=3) # Set the length of the arrow head (.05 cm), set the angle of the arrow (90 degrees is a flat line), and the code to 3, which makes an arrowhead on each end of the line
 
 # Because this is a time series, we can show the relationship between points with lines
@@ -312,7 +313,7 @@ ggplot(data = rodent_means, aes(x=period, y=abundance))+ # Define the data and m
   ylab("Rodent Abundance")+ # Label the y-axis
   ggtitle("Point plot of Portal data using ggplot")+ # Give the plot a title
   coord_cartesian(xlim = c(25,50), ylim=c(0,20))+ # Define x and y-axis range
-  theme(axis.title = element_text(size = 18), # Change the size of the text for the axis label (sepal length and petal width)
+  theme(axis.title = element_text(size = 18), # Change the size of the text for the axis labels
         axis.text = element_text(size = 12), # Change the text size of the numbers on the x and y axis
         title = element_text(size=16), # Change the text size of the title
         panel.grid.major = element_blank(), # Remove the major grid lines in the background 
@@ -365,19 +366,19 @@ hist(iris[iris$Species=="virginica",]$Petal.Length, # Subset to only the rows wh
 To make multiple plots using ggplot, we use the function facet_grid, which creates a matrix of grids based on the number of unique values in the defined column 
 
 ```{r ggplot multiple plots}
-ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because a histogram just shows the distribution of a variable, only need to define the x-axis variable
-  geom_histogram(bins = 6,
-                 col="black", # Make the outside of each bar black
-                 fill="white")+ # Make the inside of each bar white
-  theme_bw()+ # Get rid of the gray background of the plot
-  xlab("Petal Length (cm)")+ # Label the x-axis
-  ylab("Frequency of Observations")+ # Label the y-axis
-  ggtitle("Histogram of Iris data using ggplot")+ # Give the plot a title
+ggplot(data=iris,aes(x=Petal.Length))+ 
+  geom_histogram(bins = 6, # Automatically break up the data into 6 bins
+                 col="black",
+                 fill="white")+ 
+  theme_bw()+ 
+  xlab("Petal Length (cm)")+ 
+  ylab("Frequency of Observations")+ 
+  ggtitle("Histogram of Iris data using ggplot")+ 
   facet_grid(.~Species, # Make a different facet (window) for the unique values in the column Species
              scales = "free")+ # This allows ggplot to scale each axis separately. Use scales = "fixed" to make all axes the same. 
-  theme(title = element_text(size=16), # Change the text size of the title
-        panel.grid.major = element_blank(), # Remove the major grid lines in the background 
-        panel.grid.minor = element_blank(), # Remove the minor grid lines in the background
-        strip.background = element_rect(fill = "white"),  # Set the background of each label to white
-        strip.text = element_text(size = 14)) # Change the size of the text in the labels
+  theme(title = element_text(size=16), 
+        panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        strip.background = element_rect(fill = "white"), 
+        strip.text = element_text(size = 14))
 ```
