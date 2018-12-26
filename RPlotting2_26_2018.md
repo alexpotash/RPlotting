@@ -1,26 +1,20 @@
----
-title: "RPlotting2_26_2018"
-author: "Alex Potash"
-date: "12/26/2018"
-output: rmarkdown::github_document
----
+RPlotting2\_26\_2018
+================
+Alex Potash
+12/26/2018
 
-```{r setup, include=FALSE}
-chooseCRANmirror(graphics=FALSE, ind=1)
-```
+How to make plots in R using base plot and ggplot2
+==================================================
 
-# How to make plots in R using base plot and ggplot2
 R allows you to plot your data and customize the way the figure looks using base functions that are preloaded in R. These base functions make visualize data very simple and are relatively straightforward once you've learned the basics of coding in R.
 
-The ggplot2 package (hereafter referred to as ggplot), is a free package that also plots data, but allows for much greater customization than the base functions. ggplot can even perform statistical analyses and directly plot the results. However, the code to create a plot in ggplot can be somewhat hard to interpret. 
+The ggplot2 package (hereafter referred to as ggplot), is a free package that also plots data, but allows for much greater customization than the base functions. ggplot can even perform statistical analyses and directly plot the results. However, the code to create a plot in ggplot can be somewhat hard to interpret.
 
 The following examples can be adapted to create the majority of plots you will need to make in this semester's course.
 
-
 ### Start by loading the ggplot package and the sample data
 
-
-```{r install and load packages, results='hide', message=FALSE, warning=FALSE, eval=FALSE} 
+``` r
 install.packages("ggplot2") # Only need to install the package one time
 library(ggplot2) # Need to load the ggplot2 package every time you start R
 data("iris") # Iris is a famous dataset that is built into R and is commonly used as an example dataset
@@ -32,29 +26,18 @@ download_observations() # This downloads the portal data and stores it on your c
 rodent=data.frame(abundance(shape="flat")) # Load the rodent abundance data. shape="flat" is only necessary in this instance to read in the data in a more useful format.
 ```
 
-```{r, include=FALSE, echo=FALSE, eval=TRUE} 
-# Silently load the plots and data needed for the exercises below
-library(ggplot2) 
-library(portalr)
-download_observations()
-rodent=data.frame(abundance(shape="flat"))
+Scatterplots
+------------
 
-# Load iris data
-data("iris")
-```
-
-
-
-## Scatterplots
 Scatterplots are used to show data with a continuous y-variable and a continuous x-variable
-
 
 ### Scatter plots using base R
 
-```{r Saving plots1, eval=FALSE}
+``` r
 pdf("BaseRScatterplot.pdf", height = 8, width = 8) # Save the plot you're about to create as a pdf and make it 8 inches tall by 8 inches wide. Inches are the default unit in base R
 ```
-```{r base R scatterplot, echo = TRUE, collapse=TRUE, fig.dim=c(8,8)}
+
+``` r
 plot(x=iris$Sepal.Length, y=iris$Petal.Length, # Define the data for the x and y axis
      xlab = "Sepal Length", # Label the x-axis
      ylab = "Petal Length ", # Label the y-axis
@@ -91,14 +74,16 @@ legend(x = 7.2, y = 2.2,# Define the x and y coordinates where the legend will b
        title = "Species", # Give the legend a title
        pch=19) # Give the shape of the points in the legend
 ```
-```{r Saving plots2, eval=FALSE, collapse=TRUE}
+
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20R%20scatterplot-1.png)
+
+``` r
 dev.off() # Tell R that the plot is complete and the pdf should be saved      
 ```
 
-
 ### Scatterplot using ggplot
 
-```{r ggplot Scatterplot, fig.dim=c(8,8)}
+``` r
 ggplot(data = iris, # Define where the data comes from
        aes(x=Sepal.Length, y=Petal.Length, # Define the aesthetic, which is the data for the x and y axes
            color=Species))+ # Also in the aestetic, define the variable to be colored
@@ -121,26 +106,25 @@ ggplot(data = iris, # Define where the data comes from
         panel.grid.major = element_blank(), # Remove the major grid lines in the background 
         panel.grid.minor = element_blank()) # Remove the minor grid lines in the background
 ```
-```{r, echo=TRUE, eval=FALSE}
+
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20Scatterplot-1.png)
+
+``` r
 ggsave("ggScatterplot.pdf", # Save the plot as a pdf
        plot=last_plot(), # Make the saved file the last plot you created
        width = 8, # Make the saved plot 8 units wide
        height = 8, # Make the saved plot 8 units tall
        units = "in") # Make the height/width units inches
-
 ```
 
+Histograms and bar plots
+------------------------
 
-
-## Histograms and bar plots
-Histograms and bar plots are very similar. Histograms are used for continuous data while bar plots are used for categorical data.
-Histograms are used to view the distribution of continuous data by binning the values and counting the number of data points that occur in each block.
-Bar plots look very similar to histograms, but show the number of observations in discrete categories.
-
+Histograms and bar plots are very similar. Histograms are used for continuous data while bar plots are used for categorical data. Histograms are used to view the distribution of continuous data by binning the values and counting the number of data points that occur in each block. Bar plots look very similar to histograms, but show the number of observations in discrete categories.
 
 ### Histograms using base R
 
-```{r base R histogram}
+``` r
 hist(iris$Petal.Length, # Create the histogram and define the variable to be binned
      breaks = seq(1,7,by=0.5), # Define the bins which go from 0 to 5.5 in intervals of 0.25
      ylim = c(0,40), # Define the range of the y-axis 
@@ -150,10 +134,11 @@ hist(iris$Petal.Length, # Create the histogram and define the variable to be bin
      main = "Histogram of Iris data using base R") # Give the plot a title
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20R%20histogram-1.png)
 
 ### Histogram using ggplot
 
-```{r ggplot histogram}
+``` r
 ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because a histogram just shows the distribution of a variable, only need to define the x-axis variable
   geom_histogram(binwidth = 0.5, # Define the size of the bins that you want your data 
                  boundary = 1, # Set the minimum value of the first bin
@@ -169,23 +154,22 @@ ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because 
         axis.text = element_text(size = 12), # Change the text size of the numbers on the x and y axis
         panel.grid.major = element_blank(), # Remove the major grid lines in the background 
         panel.grid.minor = element_blank()) # Remove the minor grid lines in the background
-
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20histogram-1.png)
 
-## Bar plots
+Bar plots
+---------
 
-For more interesting results, we will use the Portal data. 
-We will subset the data to only the data where there were >0 rodents observed 
+For more interesting results, we will use the Portal data. We will subset the data to only the data where there were &gt;0 rodents observed
 
-```{r Rodent abundance subset}
+``` r
 rodent_abundance_sub=subset(rodent,rodent$abundance>0)
 ```
 
-
 ### Bar plots using base R
 
-```{r base R bar plot}
+``` r
 plot(rodent_abundance_sub$species, # Define the data for the plot
      xlab = "Species", # Label the x-axis
      ylab = "Frequency Observed >0", # Label the y-axis
@@ -194,9 +178,11 @@ plot(rodent_abundance_sub$species, # Define the data for the plot
      ylim = c(0,500)) # Set the range for the y-axis
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20R%20bar%20plot-1.png)
+
 ### Bar plots using ggplot
 
-```{r ggplot barplot}
+``` r
 ggplot(data=rodent_abundance_sub,aes(x=species))+ # Define the data for the plot
   stat_count(col="black", fill="white")+ # Use stat_count to create the bar plot, and make this outside of each bar black and the inside of each bar white
   theme_bw()+ # Get rid of the gray background in the plot
@@ -210,15 +196,16 @@ ggplot(data=rodent_abundance_sub,aes(x=species))+ # Define the data for the plot
         title = element_text(size = 16)) # Change the text size of the title
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20barplot-1.png)
 
+Boxplots and Point Estimates
+----------------------------
 
-## Boxplots and Point Estimates
-Boxplots and point estimates can be used to show measures of central tendency for data that are measured continuously and can be broken into distinct groups (continuous y-variable, categorical x-axis)
-A boxplot describes the data in quartiles; the line within the box is the median, the bottom of the box is the 25th percentile, and the top of the box is the 75th percentile of the data. The whiskers show the spread of the data that fall within a range of 1.5x outside the box. Outliers can also be shown as individual points beyond either end of the whiskers. 
+Boxplots and point estimates can be used to show measures of central tendency for data that are measured continuously and can be broken into distinct groups (continuous y-variable, categorical x-axis) A boxplot describes the data in quartiles; the line within the box is the median, the bottom of the box is the 25th percentile, and the top of the box is the 75th percentile of the data. The whiskers show the spread of the data that fall within a range of 1.5x outside the box. Outliers can also be shown as individual points beyond either end of the whiskers.
 
 ### Boxplots using base R
 
-```{r base r boxplot}
+``` r
 plot(x=rodent_abundance_sub$species, y=rodent_abundance_sub$abundance, # Define the data to plot on the x and y axes
      outline = F, # Setting outline = F prevents the outliers from appearing
      ylim = c(0,125), # Set the y-axis range
@@ -227,10 +214,11 @@ plot(x=rodent_abundance_sub$species, y=rodent_abundance_sub$abundance, # Define 
      main = "Boxplot of Portal data using BaseR") # Give the plot a title
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20r%20boxplot-1.png)
 
 ### Boxplots using ggplot
 
-```{r ggplot boxplot}
+``` r
 ggplot(data=rodent_abundance_sub, aes(x=species, y=abundance))+ # Define where the data come from and the aesthetic (x and y values)
   geom_boxplot(outlier.shape = NA)+ # Make the plot a box plot, and remove the outliers by setting their shape to NA
   theme_bw()+ # Get rid of the gray background
@@ -243,14 +231,15 @@ ggplot(data=rodent_abundance_sub, aes(x=species, y=abundance))+ # Define where t
         title = element_text(size=16), # Change the text size of the title
         panel.grid.major = element_blank(), # Remove the major grid lines in the background 
         panel.grid.minor = element_blank()) # Remove the minor grid lines in the background
-
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20boxplot-1.png)
 
 ### Point estimates with confidence intervals in base R
+
 We continue to use the rodent data, but to make our figures simpler, we will only use data from the first 50 time periods
 
-```{r base R point plot}
+``` r
 rodent_period_sub=subset(rodent_abundance_sub,rodent_abundance_sub$period<50) # Only use data from first 50 time periods. First time period begins at 27, so only return 23 time periods 
 
 # To plot points and confidence intervals, we need to use the function aggregate to perform a function on all rows that have the same time period
@@ -298,10 +287,11 @@ points(x = rodent_means$period, # x-values for the points
        col = "black") # Make the border color of the points black 
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20R%20point%20plot-1.png)
 
 ### Point plot using ggplot
 
-```{r ggplot point plot}
+``` r
 ggplot(data = rodent_means, aes(x=period, y=abundance))+ # Define the data and mapping for the plot
   geom_point(shape=21)+ # Display the data as points and make the shape an open circle
   geom_line()+ # Also display the data as lines
@@ -318,18 +308,20 @@ ggplot(data = rodent_means, aes(x=period, y=abundance))+ # Define the data and m
         panel.grid.minor = element_blank()) # Remove the minor grid lines in the background
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20point%20plot-1.png)
 
+Plotting multiple windows
+-------------------------
 
-## Plotting multiple windows
-Sometimes you want to display 2 or more figures at once but in separate windows. 
+Sometimes you want to display 2 or more figures at once but in separate windows.
 
 Be **VERY** careful when you make multiple plots; it is easy to mislead someone by using different scales for each plot and not clearly declaring these differences. See if you can spot this type of error in the plots below.
 
-
 ### Multiple plots in base R
+
 We display multiple plots in base R by changing the graphical parameters using the command par
 
-```{r base R multiple plots, fig.dim=c(8,4)}
+``` r
 par(mfrow=c(1,3)) # This creates 1 row and 3 columns of plots. par(mfrow=c(2,2)) would make 4 plots in 2 rows and 2 columns; par(mfrow=c(2,3)) would create 6 plots in 2 rows and 3 columns, etc.
 
 # Iris histograms separated by species
@@ -359,11 +351,13 @@ hist(iris[iris$Species=="virginica",]$Petal.Length, # Subset to only the rows wh
      main = "Histogram of versicolor Petal Length")
 ```
 
+![](RPlotting2_26_2018_files/figure-markdown_github/base%20R%20multiple%20plots-1.png)
 
 ### Multiple plots using ggplot
-To make multiple plots using ggplot, we use the function facet_grid, which creates a matrix of grids based on the number of unique values in the defined column 
 
-```{r ggplot multiple plots}
+To make multiple plots using ggplot, we use the function facet\_grid, which creates a matrix of grids based on the number of unique values in the defined column
+
+``` r
 ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because a histogram just shows the distribution of a variable, only need to define the x-axis variable
   geom_histogram(bins = 6,
                  col="black", # Make the outside of each bar black
@@ -380,3 +374,5 @@ ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. Because 
         strip.background = element_rect(fill = "white"),  # Set the background of each label to white
         strip.text = element_text(size = 14)) # Change the size of the text in the labels
 ```
+
+![](RPlotting2_26_2018_files/figure-markdown_github/ggplot%20multiple%20plots-1.png)
