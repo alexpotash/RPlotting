@@ -1,8 +1,10 @@
 ---
-title: "RPlotting2_26_2018"
+title: "Plotting in R"
 author: "Alex Potash"
 date: "12/26/2018"
-output: rmarkdown::github_document
+output:
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
