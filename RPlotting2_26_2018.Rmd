@@ -36,6 +36,7 @@ rodent=data.frame(abundance(shape="flat")) # Load the rodent abundance data. sha
 # Silently load the plots and data needed for the exercises below
 library(ggplot2) 
 library(portalr)
+library(knitr)
 download_observations()
 rodent=data.frame(abundance(shape="flat"))
 
