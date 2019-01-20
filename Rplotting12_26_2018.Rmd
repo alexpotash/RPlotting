@@ -1,8 +1,11 @@
 ---
 title: "Plotting in R"
 author: "Alex Potash"
-date: "12/26/2018"
-output: rmarkdown::github_document
+date: "1/20/2018"
+output:
+  pdf_document: default
+  html_document: default
+self_contained: no
 ---
 
 ```{r setup, include=FALSE}
@@ -21,15 +24,17 @@ The following examples can be adapted to create the majority of plots you will n
 
 
 ```{r install and load packages, results='hide', message=FALSE, warning=FALSE, eval=FALSE} 
-install.packages("ggplot2") # Only need to install the package one time
+install.packages("ggplot2", dependencies = TRUE, repos = "http://cran.us.r-project.org") 
+# Only need to install the package one time
 library(ggplot2) # Need to load the ggplot2 package every time you start R
 data("iris") # Iris is a famous dataset that is built into R and is 
 # commonly used as an example dataset
 
 # We will also use data from UF professors Dr. Earnest and Dr. White who 
 # have made their data freely available in the package portalr
-install.packages("portalr") # Only need to install the package once
-library(portalr)
+install.packages("portalr", dependencies = TRUE, repos = "http://cran.us.r-project.org") 
+# Only need to install the package once
+library(portalr) # Load the portalr package
 download_observations() # This downloads the portal data and stores 
 # it on your computer
 rodent=data.frame(abundance(shape="flat")) # Load the rodent abundance 
@@ -69,7 +74,7 @@ plot(x=iris$Sepal.Length, y=iris$Petal.Length, # Define the data for the x and y
      main = "Scatterplot of Iris data using base R", # Give the figure a title
      xlim = c(4, 8.0), # Set the minimum and maximum values for the x-axis
      ylim = c(1, 7), # Set the minimum and maximum values for the y-axis
-     col = c("blue","orange","green")[iris$Species], # Make each species a different color,
+     col = c("blue","orange","green")[iris$Species], # Make each species a different color
      cex = 1.2, # Change the size of the points
      pch = 19) # Change the shape of the points
 
@@ -116,14 +121,15 @@ dev.off() # Tell R that the plot is complete and the pdf should be saved
 
 ```{r ggplot Scatterplot, fig.dim=c(8,8)}
 ggplot(data = iris, # Define where the data comes from
-       aes(x=Sepal.Length, y=Petal.Length, # Define the aesthetic, which is the data 
-           # for the x and y axes
+       aes(x=Sepal.Length, y=Petal.Length, 
+           # Define the aesthetic, which is the data for the x and y axes
            color=Species))+ # Also in the aesthetic, define the variable to be colored
   geom_point()+ # Display the data as points
-  geom_smooth(method = lm, fullrange = T, se = T, level = 0.95, color="red", linetype="dashed")+ 
+  geom_smooth(method = lm, fullrange = T, se = T, level = 0.95, 
   # Calculate and draw the line showing the linear relationship between all of the points. 
   # By setting se = T, ggplot draws the confidence interval around the line, 
   # and setting level=0.95 makes it the 95% CI
+                color="red", linetype="dashed")+ # Make the line red and dashed
   theme_bw()+ # Get rid of the gray background
   xlab("Sepal Length (cm)")+ # Label the x-axis
   ylab("Petal Length (cm)")+ # Label the y-axis
@@ -140,10 +146,10 @@ ggplot(data = iris, # Define where the data comes from
         legend.title = element_text(size = 18), # Change the size of the legend heading
         legend.text = element_text(size = 12), # Change the size of the text in the legend
         legend.position = c(.85, .15), # Change legend position. 
-        # NOTE: Unlike base R, the position of the legend in ggplot is set as a percentage of the 
-        # x and y axes between 0-1. So, to put the legend in the very middle,
-        # the position would be c(0.5, 0.5). To put it near the bottom right, 
-        # it would be c(0.75, 0.1), etc.
+        # NOTE: Unlike base R, the position of the legend in ggplot is set as a  
+        # percentage of the x and y axes between 0-1. So, to put the legend in 
+        # the very middle the position would be c(0.5, 0.5). To put it near the bottom 
+        # right, it would be c(0.75, 0.1), etc.
         legend.background  = element_rect(colour = "black"), # Make a black rectangle 
         # around the legend
         panel.grid.major = element_blank(), # Remove the major grid lines in the background 
@@ -151,7 +157,7 @@ ggplot(data = iris, # Define where the data comes from
 ```
 ```{r, echo=TRUE, eval=FALSE}
 ggsave("ggScatterplot.pdf", # Save the plot as a pdf
-       plot=last_plot(), # Make the saved file the last plot you created
+       plot=last_plot(), # Make the saved file the most recent plot you created
        width = 8, # Make the saved plot 8 units wide
        height = 8, # Make the saved plot 8 units tall
        units = "in") # Make the height/width units inches
@@ -183,8 +189,8 @@ hist(iris$Petal.Length, # Create the histogram and define the variable to be bin
 
 ```{r ggplot histogram}
 ggplot(data=iris,aes(x=Petal.Length))+ # Define the data and aesthetic. 
-  # Because a histogram just shows the distribution of a variable, only need to define the 
-  # x-axis variable
+  # Because a histogram just shows the distribution of a variable, only need 
+  # to define the x-axis variable
   geom_histogram(binwidth = 0.5, # Define the size of the bins that you want your data 
                  boundary = 1, # Set the minimum value of the first bin
                  col="black", # Make the outside of each bar black
@@ -217,18 +223,19 @@ rodent_abundance_sub=subset(rodent,rodent$abundance>0)
 
 ### Bar plots using base R
 
-```{r base R bar plot}
+```{r base R bar plot, fig.width=6}
 plot(rodent_abundance_sub$species, # Define the data for the plot
      xlab = "Species", # Label the x-axis
      ylab = "Frequency of Observations >0", # Label the y-axis
      main = "Bar plot of Portal data using BaseR", # Give the plot a title
      col = c("white"), # Set the inside color for each bar
      ylim = c(0,500)) # Set the range for the y-axis
+
 ```
 
 ### Bar plots using ggplot
 
-```{r ggplot barplot}
+```{r ggplot barplot, fig.width= 6}
 ggplot(data=rodent_abundance_sub,aes(x=species))+ # Define the data for the plot
   stat_count(col="black", fill="white")+ # Use stat_count to create the bar plot. 
   # Make the outside (col) of each bar black and the inside (fill) of each bar white
@@ -270,8 +277,8 @@ plot(x=rodent_abundance_sub$species, y=rodent_abundance_sub$abundance, # Define 
 ```{r ggplot boxplot}
 ggplot(data=rodent_abundance_sub, aes(x=species, y=abundance))+ # Define where the data 
   # come from and the aesthetic (x and y values)
-  geom_boxplot(outlier.shape = NA)+ # Make the plot a box plot, and remove the outliers by setting 
-  # their shape to NA
+  geom_boxplot(outlier.shape = NA)+ # Make the plot a box plot, and remove 
+  # the outliers by setting their shape to NA
   theme_bw()+ # Get rid of the gray background
   xlab("Species")+ # Label the x-axis
   ylab("Abundance")+ # Label the y-axis
@@ -292,16 +299,17 @@ ggplot(data=rodent_abundance_sub, aes(x=species, y=abundance))+ # Define where t
 We continue to use the rodent data, but to make our figures simpler, we will only use data from the first 50 time periods
 
 ```{r base R point plot}
-rodent_period_sub=subset(rodent_abundance_sub,rodent_abundance_sub$period<50) # Only use data 
-# from first 50 time periods. The first time period is 27, so only return 23 time periods 
+ # Only use datafrom first 50 time periods.
+rodent_period_sub=subset(rodent_abundance_sub,rodent_abundance_sub$period<50)
+# The first time period is 27, so only return 23 time periods 
 
-# To plot points and confidence intervals, we need to use the function aggregate 
-# to perform a function on all rows that have the same time period
-rodent_agg=aggregate(rodent_period_sub$abundance, # This is the column we perform calculations on
-                     by=list(rodent_period_sub$period), # This is the column we use to identify 
-                     # which points are related (i.e., all rows that have the same value for 
-                     # period will be grouped together for analysis)
-                       function(x) c(mean=mean(x), # Create a function that calculates the mean... 
+# To plot points and confidence intervals, we need to use the function aggregate to 
+# perform a function on all rows that have the same time period
+rodent_agg=aggregate(rodent_period_sub$abundance, # The column we perform calculations on
+                     by=list(rodent_period_sub$period), # TThe column we use to
+                     #identify which points are related (i.e., all rows that have 
+                     #the same value for period will be grouped together for analysis)
+                       function(x) c(mean=mean(x), # Define a function that calculates the mean... 
                                      se=sd(x)/sqrt(length(x)))) # ...and the standard error 
                                      # for all points with a shared period
 
@@ -311,18 +319,21 @@ rodent_means=data.frame(period=rodent_agg$Group.1,
                                abundance=rodent_agg$x[,1],
                                se=rodent_agg$x[,2])
 
-# Calculate the 95% CI (spread of the data) according to the formula mean ± 1.96*se
-rodent_means$lower_CI=rodent_means$abundance-rodent_means$se*1.96 # Make a column for the lower 
-# boundary of the 95% CI
-rodent_means$upper_CI=rodent_means$abundance+rodent_means$se*1.96 # Make a column for the upper 
-# boundary of the 95% CI
 
-# Create a blank plot that has all of the attributes of a normal plot (axis names and ranges, title, etc.) 
-# but does not display the data
+
+# Calculate the 95% CI (spread of the data) according to the formula mean ± 1.96*se
+rodent_means$lower_CI=rodent_means$abundance-rodent_means$se*1.96 # Make a column for the
+# lower boundary of the 95% CI
+rodent_means$upper_CI=rodent_means$abundance+rodent_means$se*1.96 # Make a column for the
+# upper boundary of the 95% CI
+
+# Create a blank plot that has all of the attributes of a normal plot (axis names 
+# and ranges, title, etc.), but does not display the data
 plot(x = rodent_means$period,
      y = rodent_means$abundance, 
-     type = "n", # Make a blank plot so we can add the error bars, lines, and points in the order 
-     # that we want. Could also set type = "b" for both points and lines, but 
+     type = "n", # Make a blank plot so we can add the error bars, lines, and 
+     # points in the order that we want.
+     # Could also set type = "b" to display both points and lines, but 
      # this is less flexible to make the figure look how we want
      xlim = c(25, 50), # Set the x-axis range
      ylim = c(0, 20), # Set the y-axis range
@@ -358,11 +369,13 @@ points(x = rodent_means$period, # x-values for the points
 ### Point plot using ggplot
 
 ```{r ggplot point plot}
-ggplot(data = rodent_means, aes(x=period, y=abundance))+ # Define the data and mapping for the plot
+ggplot(data = rodent_means, aes(x=period, y=abundance))+ # Define the data 
+  # and mapping for the plot
   geom_point(shape=21)+ # Display the data as points and make the shape an open circle
   geom_line()+ # Also display the data as lines
-  geom_errorbar(aes(ymin=lower_CI,ymax=upper_CI))+ # Display the error bars by defining the minimum 
-  # and maximum y-values of our CI. You can also calculate these directly in ggplot.
+  geom_errorbar(aes(ymin=lower_CI,ymax=upper_CI))+ # Display the error bars by defining
+  # the minimum and maximum y-values of our CI. 
+  # Can also calculate these directly in ggplot.
   theme_bw()+ # Get rid of the gray background
   xlab("Time Period")+ # Label the x-axis
   ylab("Rodent Abundance")+ # Label the y-axis
@@ -388,12 +401,13 @@ Be **VERY** careful when you make multiple plots; it is easy to mislead someone 
 We display multiple plots in base R by changing the graphical parameters using the command par
 
 ```{r base R multiple plots, fig.dim=c(8,4)}
-par(mfrow=c(1,3)) # This creates 1 row and 3 columns of plots. par(mfrow=c(2,2)) would make 4 plots 
-# in 2 rows and 2 columns; par(mfrow=c(2,3)) would create 6 plots in 2 rows and 3 columns, etc.
+par(mfrow=c(1,3)) # This creates 1 row and 3 columns of plots. 
+# par(mfrow=c(2,2)) would make 4 plots in 2 rows and 2 columns. 
+# par(mfrow=c(2,3)) would create 6 plots in 2 rows and 3 columns, etc.
 
 # Iris histograms separated by species
 
-hist(iris[iris$Species=="setosa",]$Petal.Length, # Subset to rows where species is setosa
+hist(iris[iris$Species=="setosa",]$Petal.Length, # Subset to only setosa
      breaks = seq(1,2, by = 0.15),
      ylim = c(0, 30),
      xlim = c(1,2),
@@ -401,7 +415,7 @@ hist(iris[iris$Species=="setosa",]$Petal.Length, # Subset to rows where species 
      ylab = "Frequency of Observations",
      main = "Histogram of setosa Petal Length")
 
-hist(iris[iris$Species=="versicolor",]$Petal.Length, # Subset to rows where species is versicolor
+hist(iris[iris$Species=="versicolor",]$Petal.Length, # Subset to only versicolor
      breaks = seq(2.5,6, by = 0.5),
      ylim = c(0, 25),
      xlim = c(2.5,5.5),
@@ -409,7 +423,7 @@ hist(iris[iris$Species=="versicolor",]$Petal.Length, # Subset to rows where spec
      ylab = "Frequency of Observations",
      main = "Histogram of versicolor Petal Length")
 
-hist(iris[iris$Species=="virginica",]$Petal.Length, # Subset to rows where species is virginica
+hist(iris[iris$Species=="virginica",]$Petal.Length, # Subset to only virginica
      breaks = seq(4.5,7, by = 0.5),
      ylim = c(0, 20),
      xlim = c(4.5,7),
@@ -431,7 +445,7 @@ ggplot(data=iris,aes(x=Petal.Length))+
   xlab("Petal Length (cm)")+ 
   ylab("Frequency of Observations")+ 
   ggtitle("Histogram of Iris data using ggplot")+ 
-  facet_grid(.~Species, # Make a different facet (window) for unique values in the column Species
+  facet_grid(.~Species, # Make a different facet (window) for unique values in column Species
              scales = "free")+ # This allows ggplot to scale each axis separately. 
              # Use scales = "fixed" to make all axes the same. 
   theme(title = element_text(size=16), 
